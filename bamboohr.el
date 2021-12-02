@@ -58,6 +58,12 @@ usually found when you access https://<subdomain>.bamboohr.com."
   "time_off/whos_out/"
   "Path for Who's Out list.")
 
+;; Need these ignores because url-retrieve is implicitly
+;; using dynamic variables, but the linter does not realize this.
+(defvar url-request-method)
+(defvar url-request-extra-headers)
+(defvar url-http-end-of-headers)
+
 (defun bamboohr-request-url (path)
   "Generate BambooHR URL path using PATH."
   (format "%s/%s/%s/%s"
@@ -66,22 +72,26 @@ usually found when you access https://<subdomain>.bamboohr.com."
 	  bamboo-hr-api-version
 	  path))
 
-(defun bamboohr-debug-request (path)
-  "Fetch BambooHR response from PATH and switch to buffer containing response text."
+(defun bamboohr-request (path callback)
+  "Fetch BambooHR response from PATH and pass it to CALLBACK function."
   (let* ((url-request-method "GET")
 	 (userpass (concat bamboohr-api-key ":" "x"))
 	 (auth-b64 (concat "Basic "
 			   (base64-encode-string userpass)))
 	 (url-request-extra-headers
 	  (list (cons "Content Type" "application/json")
+		(cons "Accept" "application/json")
 		(cons "Authorization" auth-b64))))
-    ;; Need these ignores because url-retrieve-synchronously is implicitly
-    ;; using dynamic variables, but the linter does not realize this.
-    (ignore url-request-method)
-    (ignore url-request-extra-headers)
-    
-    (switch-to-buffer (url-retrieve-synchronously
-		       (bamboohr-request-url path)))))
+
+    (url-retrieve (bamboohr-request-url path) callback)))
+
+(defun bamboohr-whos-out-callback (_status)
+  (goto-char (point-min))
+  (goto-char url-http-end-of-headers)
+  (let ((parsed (json-read)))
+    (erase-buffer)
+    (insert (format "%s" parsed))
+    (switch-to-buffer-other-window (current-buffer))))
 
 (provide 'bamboohr)
 ;;; bamboohr.el ends here
