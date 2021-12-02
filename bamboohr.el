@@ -58,6 +58,15 @@ usually found when you access https://<subdomain>.bamboohr.com."
   "time_off/whos_out/"
   "Path for Who's Out list.")
 
+(defun bamboohr-whos-out-today ()
+  "Generate path + query for getting today's vacation list."
+  (let ((datestring (format-time-string "%Y-%m-%d")))
+    (concat bamboohr-whos-out-path
+	    "?start="
+	    datestring
+	    "&end="
+	    datestring)))
+
 ;; Need these ignores because url-retrieve is implicitly
 ;; using dynamic variables, but the linter does not realize this.
 (defvar url-request-method)
