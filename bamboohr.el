@@ -95,16 +95,15 @@ usually found when you access https://<subdomain>.bamboohr.com."
     (url-retrieve (bamboohr-request-url path) callback)))
 
 (defun bamboohr-whos-out-callback (_status)
+  "Given a JSON response of OOO employees, display list of names in a new buffer."
   (goto-char (point-min))
   (goto-char url-http-end-of-headers)
-  (let ((parsed (json-read)))
+  (let* ((json-object-type 'plist)
+	 (parsed (json-read))
+	 (namelist (mapconcat (lambda (x) (plist-get x :name)) parsed "\n")))
     (erase-buffer)
-    (insert (format "%s" parsed))
+    (insert (format "Who's Out?\n\n%s" namelist))
     (switch-to-buffer-other-window (current-buffer))))
 
 (provide 'bamboohr)
 ;;; bamboohr.el ends here
-
-
-
-
