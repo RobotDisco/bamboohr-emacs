@@ -46,5 +46,29 @@ usually found when you access https://<subdomain>.bamboohr.com."
   :type 'string
   :group 'bamboohr)
 
+(defconst bamboohr-url-base
+  "https://api.bamboohr.com/api/gateway.php"
+  "Base URL for BambooHR API.")
+
+(defconst bamboo-hr-api-version
+  "v1"
+  "BambooHR API version.")
+
+(defconst bamboohr-whos-out-path
+  "time_off/whos_out/"
+  "Path for Who's Out list.")
+
+(defun bamboohr-request-url (path)
+  "Generate BambooHR URL path using PATH."
+  (format "%s/%s/%s/%s"
+	  bamboohr-url-base
+	  bamboohr-subdomain
+	  bamboo-hr-api-version
+	  path))
+
 (provide 'bamboohr)
 ;;; bamboohr.el ends here
+
+
+
+
