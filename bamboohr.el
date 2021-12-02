@@ -66,6 +66,23 @@ usually found when you access https://<subdomain>.bamboohr.com."
 	  bamboo-hr-api-version
 	  path))
 
+(defun bamboohr-debug-request (path)
+  "Fetch BambooHR response from PATH and switch to buffer containing response text."
+  (let* ((url-request-method "GET")
+	 (userpass (concat bamboohr-api-key ":" "x"))
+	 (auth-b64 (concat "Basic "
+			   (base64-encode-string userpass)))
+	 (url-request-extra-headers
+	  (list (cons "Content Type" "application/json")
+		(cons "Authorization" auth-b64))))
+    ;; Need these ignores because url-retrieve-synchronously is implicitly
+    ;; using dynamic variables, but the linter does not realize this.
+    (ignore url-request-method)
+    (ignore url-request-extra-headers)
+    
+    (switch-to-buffer (url-retrieve-synchronously
+		       (bamboohr-request-url path)))))
+
 (provide 'bamboohr)
 ;;; bamboohr.el ends here
 
