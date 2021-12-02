@@ -105,5 +105,10 @@ usually found when you access https://<subdomain>.bamboohr.com."
     (insert (format "Who's Out?\n\n%s" namelist))
     (switch-to-buffer-other-window (current-buffer))))
 
+(defun bamboohr-whos-out ()
+  "Create new buffer listing OOO employees from BambooHR."
+  (interactive)
+  (bamboohr-request (bamboohr-whos-out-today) #'bamboohr-whos-out-callback))
+
 (provide 'bamboohr)
 ;;; bamboohr.el ends here
